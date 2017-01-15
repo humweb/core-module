@@ -3,6 +3,7 @@
 namespace Humweb\Core\Http\Controllers;
 
 use Humweb\Breadcrumbs\Breadcrumbs;
+use Humweb\Core\Http\Traits\Metadata;
 use Humweb\Settings\Facades\Settings;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\Auth;
 
 abstract class Controller extends BaseController
 {
-    use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+    use AuthorizesRequests, DispatchesJobs, ValidatesRequests, Metadata;
 
     protected $layout = 'layouts.default';
     protected $breadcrumbs;
@@ -35,7 +36,7 @@ abstract class Controller extends BaseController
 
         // Setup User
 //        $this->middleware(function ($request, $next) {
-            $this->currentUser = Auth::user();
+        $this->currentUser = Auth::user();
 
 //            return $next($request);
 //        });
@@ -60,7 +61,7 @@ abstract class Controller extends BaseController
             if ($data instanceof Arrayable) {
                 $data = $data->toArray();
             }
-
+            $this->shareMetadataWithView($this->layout);
             return $this->layout->nest('child', $view, is_array($data) ? $data : []);
         }
 
@@ -86,6 +87,7 @@ abstract class Controller extends BaseController
     {
         if ( ! is_null($this->layout) && ! is_object($this->layout)) {
             $this->layout = view($this->layout);
+
         }
     }
 
