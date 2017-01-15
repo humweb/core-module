@@ -46,13 +46,13 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
-        'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
+        'auth'       => \Illuminate\Auth\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
-        'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
-        'can' => \Illuminate\Auth\Middleware\Authorize::class,
-        'guest' => \Humweb\Core\Http\Middleware\RedirectIfAuthenticated::class,
+        'bindings'   => \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        'can'        => \Illuminate\Auth\Middleware\Authorize::class,
+        'guest'      => \Humweb\Core\Http\Middleware\RedirectIfAuthenticated::class,
         'allow.only' => \Humweb\Core\Http\Middleware\AllowOnly::class,
-        'allow.any' => \Humweb\Core\Http\Middleware\AllowAny::class,
-        'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'allow.any'  => \Humweb\Core\Http\Middleware\AllowAny::class,
+        'throttle'   => \Illuminate\Routing\Middleware\ThrottleRequests::class,
     ];
 }

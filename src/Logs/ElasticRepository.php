@@ -1,7 +1,5 @@
 <?php namespace Humweb\Core\Logs;
 
-use Illuminate\Support\Facades\Redis;
-
 /**
  * RedisRepository
  *
@@ -12,7 +10,7 @@ class ElasticRepository
 {
     protected $client;
 
-    protected $keys = [];
+    protected $keys    = [];
     protected $servers = [];
     protected $delimiter;
 
@@ -26,10 +24,10 @@ class ElasticRepository
         $this->delimiter = $delimiter;
     }
 
+
     public function getKeys($pattern = 'logger-*')
     {
-        if (is_null($pattern))
-        {
+        if (is_null($pattern)) {
             $pattern = 'logger-*';
         }
 
@@ -38,8 +36,8 @@ class ElasticRepository
             $this->keys = array_keys($this->client->indices()->getMapping([
                 'index' => 'logger-*'
             ]));
-
         }
+
         return $this->keys;
     }
 
@@ -47,13 +45,14 @@ class ElasticRepository
     public function get($key, $start = 0, $end = 25)
     {
         $parsedLogs = [];
-        $logs = $this->client->lrange($key, $start, $end);
-        foreach ($logs as $log)
-        {
+        $logs       = $this->client->lrange($key, $start, $end);
+        foreach ($logs as $log) {
             $parsedLogs[] = json_decode($log);
         }
+
         return $parsedLogs;
     }
+
 
     public function count($key)
     {
@@ -81,6 +80,7 @@ class ElasticRepository
 
             $this->servers = array_combine($servers, $servers);
         }
+
         return $this->servers;
     }
 

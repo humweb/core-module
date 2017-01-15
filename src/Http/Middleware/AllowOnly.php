@@ -21,9 +21,9 @@ class AllowOnly
     {
         $action = $request->route()->getAction();
         $isUser = Auth::guard($guard)->user();
-        $url = array_get($action, 'redirect_url', !$isUser ? '/login' : '/');
+        $url    = array_get($action, 'redirect_url', ! $isUser ? '/login' : '/');
 
-        if (!$isUser || !$isUser->getPermission()->hasPermission($permissions)) {
+        if ( ! $isUser || ! $isUser->getPermission()->hasPermission($permissions)) {
             $message = array_get($action, 'message', 'Not enough access..');
 
             if ($request->ajax()) {

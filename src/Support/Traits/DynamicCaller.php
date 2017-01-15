@@ -11,17 +11,6 @@ trait DynamicCaller
      */
     protected $_callerClass;
 
-    /**
-     * Checks if method exists.
-     *
-     * @param string $name
-     *
-     * @return bool
-     */
-    public function hasCallableMethod($name)
-    {
-        return method_exists($this->_callerClass, $name);
-    }
 
     /**
      * Dynamically handle calls to the class.
@@ -42,6 +31,20 @@ trait DynamicCaller
         throw new \BadMethodCallException("Method {$method} does not exist.");
     }
 
+
+    /**
+     * Checks if method exists.
+     *
+     * @param string $name
+     *
+     * @return bool
+     */
+    public function hasCallableMethod($name)
+    {
+        return method_exists($this->_callerClass, $name);
+    }
+
+
     /**
      * @return mixed
      */
@@ -49,6 +52,7 @@ trait DynamicCaller
     {
         return $this->_callerClass;
     }
+
 
     /**
      * @param mixed $callerClass

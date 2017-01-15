@@ -28,29 +28,6 @@ class RedisRepository
     }
 
 
-    public function getKeys($pattern = 'logs:*')
-    {
-        if (is_null($pattern)) {
-            $pattern = 'logs:*';
-        }
-
-        if (empty($this->keys)) {
-
-            if (strpos($pattern, '-') !== false) {
-            }
-            $this->keys = $this->redis->keys($pattern);
-
-            foreach ($this->keys as $key) {
-                $tokens                    = explode($this->delimiter, $key);
-                $this->servers[$tokens[1]] = 1;
-            }
-            $this->servers = array_keys($this->servers);
-        }
-
-        return $this->keys;
-    }
-
-
     public function get($key, $start = 0, $end = 25, $level = '*')
     {
 
@@ -133,5 +110,28 @@ class RedisRepository
         }
 
         return $this->servers;
+    }
+
+
+    public function getKeys($pattern = 'logs:*')
+    {
+        if (is_null($pattern)) {
+            $pattern = 'logs:*';
+        }
+
+        if (empty($this->keys)) {
+
+            if (strpos($pattern, '-') !== false) {
+            }
+            $this->keys = $this->redis->keys($pattern);
+
+            foreach ($this->keys as $key) {
+                $tokens                    = explode($this->delimiter, $key);
+                $this->servers[$tokens[1]] = 1;
+            }
+            $this->servers = array_keys($this->servers);
+        }
+
+        return $this->keys;
     }
 }

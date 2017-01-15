@@ -6,9 +6,8 @@
  * @package Humweb\Core\Logs
  */
 
-
-use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\ElasticaFormatter;
+use Monolog\Formatter\FormatterInterface;
 use Monolog\Logger;
 
 /**
@@ -39,6 +38,7 @@ class ElasticHandler extends AbstractProcessingHandler
      */
     protected $options = array();
 
+
     /**
      * @param Client  $client  Elastica Client object
      * @param array   $options Handler configuration
@@ -48,24 +48,14 @@ class ElasticHandler extends AbstractProcessingHandler
     public function __construct(Client $client, array $options = array(), $level = Logger::DEBUG, $bubble = true)
     {
         parent::__construct($level, $bubble);
-        $this->client = $client;
-        $this->options = array_merge(
-            array(
-                'index'          => 'monolog',      // Elastic index name
-                'type'           => 'record',       // Elastic document type
-                'ignore_error'   => false,          // Suppress Elastica exceptions
-            ),
-            $options
-        );
+        $this->client  = $client;
+        $this->options = array_merge(array(
+            'index'        => 'monolog',      // Elastic index name
+            'type'         => 'record',       // Elastic document type
+            'ignore_error' => false,          // Suppress Elastica exceptions
+        ), $options);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function write(array $record)
-    {
-        $this->bulkSend(array($record['formatted']));
-    }
 
     /**
      * {@inheritdoc}
@@ -78,8 +68,10 @@ class ElasticHandler extends AbstractProcessingHandler
         throw new \InvalidArgumentException('ElasticSearchHandler is only compatible with ElasticaFormatter');
     }
 
+
     /**
      * Getter options
+     *
      * @return array
      */
     public function getOptions()
@@ -87,13 +79,6 @@ class ElasticHandler extends AbstractProcessingHandler
         return $this->options;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function getDefaultFormatter()
-    {
-        return new ElasticaFormatter($this->options['index'], $this->options['type']);
-    }
 
     /**
      * {@inheritdoc}
@@ -104,9 +89,21 @@ class ElasticHandler extends AbstractProcessingHandler
         $this->bulkSend($documents);
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function write(array $record)
+    {
+        $this->bulkSend(array($record['formatted']));
+    }
+
+
     /**
      * Use Elasticsearch bulk API to send list of documents
-     * @param  array             $documents
+     *
+     * @param  array $documents
+     *
      * @throws \RuntimeException
      */
     protected function bulkSend(array $documents)
@@ -114,9 +111,18 @@ class ElasticHandler extends AbstractProcessingHandler
         try {
             $this->client->addDocuments($documents);
         } catch (ExceptionInterface $e) {
-            if (!$this->options['ignore_error']) {
+            if ( ! $this->options['ignore_error']) {
                 throw new \RuntimeException("Error sending messages to Elasticsearch", 0, $e);
             }
         }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function getDefaultFormatter()
+    {
+        return new ElasticaFormatter($this->options['index'], $this->options['type']);
     }
 }

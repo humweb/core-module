@@ -12,20 +12,24 @@ trait ConfigTrait
 {
     protected $config = [];
 
+
     public function fillConfig($config = [])
     {
         $this->config = $config;
     }
+
+
+    public function getConfig($key = null)
+    {
+        return $key !== null ? $this->config[$key] : $this->config;
+    }
+
 
     public function setConfig($key, $val = null)
     {
         $this->config[$key] = $val;
     }
 
-    public function getConfig($key = null)
-    {
-        return $key !== null ? $this->config[$key] : $this->config;
-    }
 
     public function configKeyExists($key)
     {

@@ -16,12 +16,14 @@ interface ModelRepositoryInterface
      */
     public function createModel(array $data = []);
 
+
     /**
      * Returns the model.
      *
      * @return string
      */
     public function getModel();
+
 
     /**
      * Runtime override of the model.

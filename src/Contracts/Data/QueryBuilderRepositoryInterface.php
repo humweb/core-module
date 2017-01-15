@@ -14,12 +14,14 @@ interface QueryBuilderRepositoryInterface
      */
     public function createQuery();
 
+
     /**
      * Returns the model.
      *
      * @return string
      */
     public function getRepositoryTable();
+
 
     /**
      * Runtime override of the model.
@@ -29,6 +31,7 @@ interface QueryBuilderRepositoryInterface
      * @return $this
      */
     public function setRepositoryTable($table);
+
 
     /**
      * Set primary key.

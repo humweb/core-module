@@ -1,10 +1,12 @@
 <?php namespace Humweb\Core\Data\Repositories;
+
 /**
  * Manager
- * 
+ *
  * @package App\Support\Repositories
  */
-class Manager {
+class Manager
+{
 
     protected $app;
     protected $repositories = [];
@@ -12,6 +14,7 @@ class Manager {
      * @var string
      */
     protected $contract;
+
 
     /**
      * Manager constructor.
@@ -21,34 +24,32 @@ class Manager {
      */
     public function __construct($app, $contract = '')
     {
-        $this->app = $app;
+        $this->app      = $app;
         $this->contract = $contract;
     }
+
 
     public function bindRepository()
     {
         $env = $this->getEnv();
-//        dd($env);
+        //        dd($env);
         $repositories = $this->getRepositories();
 
-        if (isset($repositories[$env]))
-        {
+        if (isset($repositories[$env])) {
             $this->app->bind($this->getContract(), $repositories[$env]);
-        }
-        elseif (isset($repositories['*']))
-        {
+        } elseif (isset($repositories['*'])) {
             $this->app->bind($this->getContract(), $repositories['*']);
-        }
-        else
-        {
+        } else {
             throw new \Exception('Repository not found for environment.');
         }
     }
+
 
     public function getEnv()
     {
         return getenv('APP_ENV');
     }
+
 
     /**
      * @return array
@@ -57,6 +58,7 @@ class Manager {
     {
         return $this->repositories;
     }
+
 
     /**
      * @return string

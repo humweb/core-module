@@ -4,7 +4,6 @@ namespace Humweb\Core\Data\Repositories;
 
 use Humweb\Core\Contracts\Data\CrudRepositoryInterface;
 use Humweb\Core\Contracts\Data\ModelRepositoryInterface;
-use Humweb\Core\Data\Traits\EloquentRepository as EloquentRepositoryTrait;
 
 /**
  * EloquentRepository.php.
@@ -17,50 +16,12 @@ class EloquentRepository implements ModelRepositoryInterface, CrudRepositoryInte
 
     protected $model;
 
+
     public function all()
     {
-        return $this->createModel()
-            ->orderBy('created_at', 'desc')
-            ->all();
+        return $this->createModel()->orderBy('created_at', 'desc')->all();
     }
 
-    public function allPaged($pages = 15)
-    {
-        return $this->createModel()
-            ->orderBy('created_at', 'desc')
-            ->paginate($pages);
-    }
-
-    public function find($id)
-    {
-        return $this->createModel()->find($id);
-    }
-
-    public function create(array $data)
-    {
-        return $this->createModel()->create($data);
-    }
-
-    public function update($id, array $data)
-    {
-        list($model, $pk) = $this->createModelAndGetKey();
-
-        return $model->where($pk, $id)->update($data);
-    }
-
-    public function delete($id)
-    {
-        list($model, $pk) = $this->createModelAndGetKey();
-
-        return $this->createModel()->destroy($id);
-    }
-
-    public function deleteMany(array $ids)
-    {
-        list($model, $pk) = $this->createModelAndGetKey();
-
-        return $model->whereIn($pk, $ids)->delete();
-    }
 
     /**
      * Create a new instance of the model.
@@ -76,6 +37,61 @@ class EloquentRepository implements ModelRepositoryInterface, CrudRepositoryInte
         return new $class($data);
     }
 
+
+    public function allPaged($pages = 15)
+    {
+        return $this->createModel()->orderBy('created_at', 'desc')->paginate($pages);
+    }
+
+
+    public function find($id)
+    {
+        return $this->createModel()->find($id);
+    }
+
+
+    public function create(array $data)
+    {
+        return $this->createModel()->create($data);
+    }
+
+
+    public function update($id, array $data)
+    {
+        list($model, $pk) = $this->createModelAndGetKey();
+
+        return $model->where($pk, $id)->update($data);
+    }
+
+
+    /**
+     * @return mixed
+     */
+    public function createModelAndGetKey()
+    {
+        $model = $this->createModel();
+        $pk    = $model->getKeyName();
+
+        return array($model, $pk);
+    }
+
+
+    public function delete($id)
+    {
+        list($model, $pk) = $this->createModelAndGetKey();
+
+        return $this->createModel()->destroy($id);
+    }
+
+
+    public function deleteMany(array $ids)
+    {
+        list($model, $pk) = $this->createModelAndGetKey();
+
+        return $model->whereIn($pk, $ids)->delete();
+    }
+
+
     /**
      * Returns the model.
      *
@@ -85,6 +101,7 @@ class EloquentRepository implements ModelRepositoryInterface, CrudRepositoryInte
     {
         return $this->model;
     }
+
 
     /**
      * Runtime override of the model.
@@ -98,16 +115,5 @@ class EloquentRepository implements ModelRepositoryInterface, CrudRepositoryInte
         $this->model = $model;
 
         return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function createModelAndGetKey()
-    {
-        $model = $this->createModel();
-        $pk = $model->getKeyName();
-
-        return array($model, $pk);
     }
 }

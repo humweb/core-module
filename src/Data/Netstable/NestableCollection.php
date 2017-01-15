@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Humweb\Core\Data\Nestable;
 
 use Illuminate\Database\Eloquent\Collection;
@@ -12,12 +11,14 @@ class NestableCollection extends Collection
     private $parentColumn;
     private $removeItemsWithMissingAncestor = false;
 
+
     public function __construct($items = [])
     {
         parent::__construct($items);
         $this->parentColumn = 'parent_id';
-        $this->total = count($items);
+        $this->total        = count($items);
     }
+
 
     /**
      * Nest items.
@@ -27,7 +28,7 @@ class NestableCollection extends Collection
     public function nest()
     {
         $parentColumn = $this->parentColumn;
-        if (!$parentColumn) {
+        if ( ! $parentColumn) {
             return $this;
         }
 
@@ -37,7 +38,7 @@ class NestableCollection extends Collection
 
         // Add empty collection to each items.
         $collection = $this->each(function ($item) {
-            if (!$item->items) {
+            if ( ! $item->items) {
                 $item->items = new BaseCollection;
             }
         });
@@ -67,6 +68,29 @@ class NestableCollection extends Collection
         return $this;
     }
 
+
+    /**
+     * Check if an ancestor is missing.
+     *
+     * @param $item
+     *
+     * @return bool
+     */
+    public function ancestorIsMissing($item)
+    {
+        $parentColumn = $this->parentColumn;
+        if ( ! $item->{$parentColumn}) {
+            return false;
+        }
+        if ( ! $this->has($item->{$parentColumn})) {
+            return true;
+        }
+        $parent = $this[$item->{$parentColumn}];
+
+        return $this->ancestorIsMissing($parent);
+    }
+
+
     /**
      * Recursive function that flatten a nested Collection
      * with characters (default is four spaces).
@@ -79,8 +103,13 @@ class NestableCollection extends Collection
      *
      * @return array
      */
-    public function listsFlattened($column = 'title', BaseCollection $collection = null, $level = 0, array &$flattened = [], $indentChars = '&nbsp;&nbsp;&nbsp;&nbsp;')
-    {
+    public function listsFlattened(
+        $column = 'title',
+        BaseCollection $collection = null,
+        $level = 0,
+        array &$flattened = [],
+        $indentChars = '&nbsp;&nbsp;&nbsp;&nbsp;'
+    ) {
         $collection = $collection ?: $this;
         foreach ($collection as $item) {
             $flattened[$item->id] = str_repeat($indentChars, $level).$item->$column;
@@ -91,6 +120,7 @@ class NestableCollection extends Collection
 
         return $flattened;
     }
+
 
     /**
      * Force keeping items that have a missing ancestor.
@@ -104,36 +134,6 @@ class NestableCollection extends Collection
         return $this;
     }
 
-    /**
-     * Check if an ancestor is missing.
-     *
-     * @param $item
-     *
-     * @return bool
-     */
-    public function ancestorIsMissing($item)
-    {
-        $parentColumn = $this->parentColumn;
-        if (!$item->{$parentColumn}) {
-            return false;
-        }
-        if (!$this->has($item->{$parentColumn})) {
-            return true;
-        }
-        $parent = $this[$item->{$parentColumn}];
-
-        return $this->ancestorIsMissing($parent);
-    }
-
-    /**
-     * Get total items in nested collection.
-     *
-     * @return int
-     */
-    public function total()
-    {
-        return $this->total;
-    }
 
     /**
      * Get total items for laravel 4 compatibility.
@@ -143,5 +143,16 @@ class NestableCollection extends Collection
     public function getTotal()
     {
         return $this->total();
+    }
+
+
+    /**
+     * Get total items in nested collection.
+     *
+     * @return int
+     */
+    public function total()
+    {
+        return $this->total;
     }
 }

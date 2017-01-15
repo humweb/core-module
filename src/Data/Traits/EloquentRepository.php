@@ -11,20 +11,6 @@ namespace Humweb\Core\Data\Traits;
 trait EloquentRepository
 {
     /**
-     * Create a new instance of the model.
-     *
-     * @param array $data
-     *
-     * @return mixed
-     */
-    public function createModel(array $data = [])
-    {
-        $class = '\\'.ltrim($this->model, '\\');
-
-        return new $class($data);
-    }
-
-    /**
      * Returns the model.
      *
      * @return string
@@ -33,6 +19,7 @@ trait EloquentRepository
     {
         return $this->model;
     }
+
 
     /**
      * Runtime override of the model.
@@ -48,14 +35,30 @@ trait EloquentRepository
         return $this;
     }
 
+
     /**
      * @return mixed
      */
     public function createModelAndGetKey()
     {
         $model = $this->createModel();
-        $pk = $model->getKeyName();
+        $pk    = $model->getKeyName();
 
         return array($model, $pk);
+    }
+
+
+    /**
+     * Create a new instance of the model.
+     *
+     * @param array $data
+     *
+     * @return mixed
+     */
+    public function createModel(array $data = [])
+    {
+        $class = '\\'.ltrim($this->model, '\\');
+
+        return new $class($data);
     }
 }

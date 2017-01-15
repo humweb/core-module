@@ -19,6 +19,7 @@ trait QueryBuilderRepository
         return DB::table($this->getRepositoryTable());
     }
 
+
     /**
      * Returns the model.
      *
@@ -28,6 +29,7 @@ trait QueryBuilderRepository
     {
         return $this->table;
     }
+
 
     /**
      * Runtime override of the model.
@@ -41,6 +43,7 @@ trait QueryBuilderRepository
         $this->table = $table;
     }
 
+
     /**
      * Set primary key.
      *
@@ -52,6 +55,7 @@ trait QueryBuilderRepository
     {
         $this->primaryKey = $key ?: 'id';
     }
+
 
     public function getPrimaryKey()
     {

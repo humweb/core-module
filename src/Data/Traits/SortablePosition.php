@@ -24,18 +24,6 @@ trait SortablePosition
         'insertPosition' => 'bottom'
     ];
 
-    /**
-     * Required to override options and kick off the Sortable's automatic list management.
-     *
-     * @param  array $options [column=>string, scope=>string|BelongsTo|Builder, lowestPosition=>int, insertPosition=>string]
-     *
-     * @return void
-     */
-    public function initSortable($options = [])
-    {
-        //Update config with options
-        $this->sortableConfig = array_replace($this->sortableConfig, $options);
-    }
 
     /**
      * Boot trait
@@ -48,7 +36,6 @@ trait SortablePosition
             $field = $model->getScopeField();
             $model->scopeCondition()->where('position', '>', $model->position)->decrement('position');
         });
-
 
         static::updating(function (Model $model) {
 
@@ -84,6 +71,21 @@ trait SortablePosition
         });
     }
 
+
+    /**
+     * Required to override options and kick off the Sortable's automatic list management.
+     *
+     * @param  array $options [column=>string, scope=>string|BelongsTo|Builder, lowestPosition=>int, insertPosition=>string]
+     *
+     * @return void
+     */
+    public function initSortable($options = [])
+    {
+        //Update config with options
+        $this->sortableConfig = array_replace($this->sortableConfig, $options);
+    }
+
+
     public function handleSortableScopeChanged()
     {
         $oldPos = $this->getOriginal('position');
@@ -96,10 +98,6 @@ trait SortablePosition
         $this->scopeCondition()->where('position', '>=', $newPos)->increment('position');
     }
 
-    public function getNextPosition()
-    {
-        return $this->scopeCondition()->max('position') + 1;
-    }
 
     /**
      * Returns the raw WHERE clause to be used as the Sortable scope
@@ -128,6 +126,18 @@ trait SortablePosition
         }
     }
 
+
+    /**
+     * Get the value of the 'scope' option
+     *
+     * @return mixed Can be a string, an Eloquent BelongsTo, or an Eloquent Builder
+     */
+    public function getSortableScope()
+    {
+        return $this->sortableConfig['scope'];
+    }
+
+
     /**
      * @param $scope
      *
@@ -143,6 +153,72 @@ trait SortablePosition
 
         throw new \Exception('The Sortable scope is a "belongsTo" relationship, but the foreign key is null.');
     }
+
+
+    public function getNextPosition()
+    {
+        return $this->scopeCondition()->max('position') + 1;
+    }
+
+
+    /**
+     * An Eloquent scope based on the processed scope option
+     *
+     * @param  $query An Eloquent Query Builder instance
+     *
+     * @return Builder instance
+     */
+    public function scopeSortableScope($query, $field, $val, $op = '=')
+    {
+        return $query->where($field, $op, $val);
+    }
+
+
+    /**
+     * Returns the value of the 'insertPosition' option
+     *
+     * @return string
+     */
+    public function getInsertPosition()
+    {
+        return $this->sortableConfig['insertPosition'];
+    }
+
+
+    /**
+     * Returns the value of the model's current position
+     *
+     * @return int
+     */
+    public function getSortablePosition()
+    {
+        return $this->getAttribute($this->positionColumn());
+    }
+
+
+    /**
+     * Get the name of the position 'column' option
+     *
+     * @return string
+     */
+    public function positionColumn()
+    {
+        return $this->sortableConfig['column'];
+    }
+
+
+    /**
+     * Sets the value of the model's position
+     *
+     * @param int $position
+     *
+     * @return void
+     */
+    public function setSortablePosition($position)
+    {
+        $this->setAttribute($this->positionColumn(), $position);
+    }
+
 
     /**
      * Returns whether the scope has changed during the course of interaction with the model
@@ -164,6 +240,7 @@ trait SortablePosition
         return false;
     }
 
+
     private function getScopeField()
     {
         $scope = $this->getSortableScope();
@@ -179,84 +256,6 @@ trait SortablePosition
         return false;
     }
 
-    /**
-     * An Eloquent scope based on the processed scope option
-     *
-     * @param  $query An Eloquent Query Builder instance
-     *
-     * @return Builder instance
-     */
-    public function scopeSortableScope($query, $field, $val, $op = '=')
-    {
-        return $query->where($field, $op, $val);
-    }
-
-    /**
-     * Updates a sortable config value
-     *
-     * @param string
-     * @param mixed
-     *
-     * @return void
-     */
-    public function setSortableConfig($key, $value)
-    {
-        $this->sortableConfig[$key] = $value;
-    }
-
-    /**
-     * Get the name of the position 'column' option
-     *
-     * @return string
-     */
-    public function positionColumn()
-    {
-        return $this->sortableConfig['column'];
-    }
-
-    /**
-     * Get the value of the 'scope' option
-     *
-     * @return mixed Can be a string, an Eloquent BelongsTo, or an Eloquent Builder
-     */
-    public function getSortableScope()
-    {
-        return $this->sortableConfig['scope'];
-    }
-
-    /**
-     * Returns the value of the 'insertPosition' option
-     *
-     * @return string
-     */
-    public function getInsertPosition()
-    {
-        return $this->sortableConfig['insertPosition'];
-    }
-
-    /**
-     * Returns the value of the model's current position
-     *
-     * @return int
-     */
-    public function getSortablePosition()
-    {
-        return $this->getAttribute($this->positionColumn());
-    }
-
-    /**
-     * Sets the value of the model's position
-     *
-     * @param int $position
-     *
-     * @return void
-     */
-    public function setSortablePosition($position)
-    {
-        $this->setAttribute($this->positionColumn(), $position);
-    }
-
-    /* Private Methods */
 
     /**
      * Creates an instance of the current class scope as a list
@@ -269,6 +268,22 @@ trait SortablePosition
         $model->setSortableConfig('scope', $this->scopeCondition());
 
         return $model->sortableScope();
+    }
+
+    /* Private Methods */
+
+
+    /**
+     * Updates a sortable config value
+     *
+     * @param string
+     * @param mixed
+     *
+     * @return void
+     */
+    public function setSortableConfig($key, $value)
+    {
+        $this->sortableConfig[$key] = $value;
     }
 
 }

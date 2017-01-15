@@ -20,18 +20,6 @@ trait VersionableTrait
 
 
     /**
-     * Attribute mutator for "reason"
-     * Prevent "reason" to become a database attribute of model
-     *
-     * @param string $value
-     */
-    public function setReasonAttribute($value)
-    {
-        $this->reason = $value;
-    }
-
-
-    /**
      * Initialize model events
      */
     public static function boot()
@@ -49,11 +37,14 @@ trait VersionableTrait
 
 
     /**
-     * @return mixed
+     * Attribute mutator for "reason"
+     * Prevent "reason" to become a database attribute of model
+     *
+     * @param string $value
      */
-    public function versions()
+    public function setReasonAttribute($value)
     {
-        return $this->morphMany(Version::class, 'versionable');
+        $this->reason = $value;
     }
 
 
@@ -63,6 +54,15 @@ trait VersionableTrait
     public function getCurrentVersion()
     {
         return $this->versions()->orderBy(Version::CREATED_AT, 'DESC')->first();
+    }
+
+
+    /**
+     * @return mixed
+     */
+    public function versions()
+    {
+        return $this->morphMany(Version::class, 'versionable');
     }
 
 
@@ -112,6 +112,12 @@ trait VersionableTrait
     }
 
 
+    public function versionsEnabled()
+    {
+        return ! isset($this->versionsEnabled) || $this->versionsEnabled === true;
+    }
+
+
     /**
      * Save a new version
      */
@@ -130,15 +136,6 @@ trait VersionableTrait
             ]);
 
             $this->cleanupVersions();
-        }
-    }
-
-
-    public function cleanupVersions($limit = 6)
-    {
-        $versions = $this->versions()->select('id')->orderBy('id', 'desc')->skip($limit)->take($limit)->get();
-        foreach ($versions as $version) {
-            $version->delete();
         }
     }
 
@@ -172,9 +169,12 @@ trait VersionableTrait
     }
 
 
-    public function versionsEnabled()
+    public function cleanupVersions($limit = 6)
     {
-        return ! isset($this->versionsEnabled) || $this->versionsEnabled === true;
+        $versions = $this->versions()->select('id')->orderBy('id', 'desc')->skip($limit)->take($limit)->get();
+        foreach ($versions as $version) {
+            $version->delete();
+        }
     }
 
 

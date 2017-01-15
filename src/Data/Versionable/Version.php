@@ -9,16 +9,16 @@ use Illuminate\Database\Eloquent\Model;
  * Class Version
  *
  * @package LGL\Core\Versionable
- * @property integer $id
- * @property integer $versionable_id
- * @property string $versionable_type
- * @property integer $user_id
- * @property string $model_data
- * @property string $reason
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
+ * @property integer                                            $id
+ * @property integer                                            $versionable_id
+ * @property string                                             $versionable_type
+ * @property integer                                            $user_id
+ * @property string                                             $model_data
+ * @property string                                             $reason
+ * @property \Carbon\Carbon                                     $created_at
+ * @property \Carbon\Carbon                                     $updated_at
  * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $versionable
- * @property-read mixed $responsible_user
+ * @property-read mixed                                         $responsible_user
  * @method static \Illuminate\Database\Query\Builder|\Humweb\Core\Data\Versionable\Version whereId($value)
  * @method static \Illuminate\Database\Query\Builder|\Humweb\Core\Data\Versionable\Version whereVersionableId($value)
  * @method static \Illuminate\Database\Query\Builder|\Humweb\Core\Data\Versionable\Version whereVersionableType($value)
@@ -38,6 +38,7 @@ class Version extends Model
     public $table = "content_versions";
 
     protected $guarded = [];
+
 
     /**
      * Sets up the relation

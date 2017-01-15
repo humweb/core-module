@@ -22,6 +22,21 @@ trait SluggableTrait
     protected $runtimeSlugOptions = [];
 
 
+    /**
+     * Boot the trait.
+     */
+    protected static function bootSluggableTrait()
+    {
+        static::creating(function (Model $model) {
+            $model->addSlug();
+        });
+
+        static::updating(function (Model $model) {
+            $model->addSlug();
+        });
+    }
+
+
     public function getSlugOptions()
     {
         $options = $this->slugOptions;
@@ -49,21 +64,6 @@ trait SluggableTrait
         }
 
         return $this;
-    }
-
-
-    /**
-     * Boot the trait.
-     */
-    protected static function bootSluggableTrait()
-    {
-        static::creating(function (Model $model) {
-            $model->addSlug();
-        });
-
-        static::updating(function (Model $model) {
-            $model->addSlug();
-        });
     }
 
 

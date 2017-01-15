@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * LGL\Core\Content\Models\Relatable
  *
- * @property int    $id
- * @property int    $source_id
- * @property string $source_type
- * @property int    $related_id
- * @property string $related_type
+ * @property int                                                $id
+ * @property int                                                $source_id
+ * @property string                                             $source_type
+ * @property int                                                $related_id
+ * @property string                                             $related_type
  * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $related
  * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $source
  * @method static \Illuminate\Database\Query\Builder|\LGL\Core\Content\Models\Relatable whereSourceType($value)
@@ -22,16 +22,15 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Relatable extends Model
 {
-    protected $table = 'content_related';
-
-    /** @var array */
-    protected $guarded = [];
-    /** @var string|null */
-    protected $primaryKey = null;
     /** @var bool */
     public $incrementing = false;
     /** @var bool */
     public $timestamps = false;
+    protected $table = 'content_related';
+    /** @var array */
+    protected $guarded = [];
+    /** @var string|null */
+    protected $primaryKey = null;
 
 
     public function related()

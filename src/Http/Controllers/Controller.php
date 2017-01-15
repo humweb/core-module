@@ -35,11 +35,11 @@ abstract class Controller extends BaseController
         app()->setLocale(array_get($this->settings, 'site.lang', 'en'));
 
         // Setup User
-//        $this->middleware(function ($request, $next) {
+        //        $this->middleware(function ($request, $next) {
         $this->currentUser = Auth::user();
 
-//            return $next($request);
-//        });
+        //            return $next($request);
+        //        });
 
         $this->viewShare('currentUser', $this->currentUser);
 
@@ -49,61 +49,11 @@ abstract class Controller extends BaseController
 
 
     /**
-     * Show the user profile.
-     */
-    public function setContent($view, $data = [])
-    {
-        if ($this->breadcrumbs) {
-            $this->viewShare('breadcrumbs', $this->breadcrumbs);
-        }
-
-        if ( ! is_null($this->layout)) {
-            if ($data instanceof Arrayable) {
-                $data = $data->toArray();
-            }
-            $this->shareMetadataWithView($this->layout);
-            return $this->layout->nest('child', $view, is_array($data) ? $data : []);
-        }
-
-        return view($view, $data);
-    }
-
-
-    /**
-     * Set the layout used by the controller.
-     *
-     * @param $name
-     */
-    protected function setLayout($name)
-    {
-        $this->layout = is_string($name) ? view($name) : $name;
-    }
-
-
-    /**
-     * Setup the layout used by the controller.
-     */
-    protected function setupLayout()
-    {
-        if ( ! is_null($this->layout) && ! is_object($this->layout)) {
-            $this->layout = view($this->layout);
-
-        }
-    }
-
-
-    /**
      * Setup the layout used by the controller.
      */
     protected function viewShare($key, $data)
     {
         view()->share($key, $data);
-    }
-
-
-    public function setTitle($title)
-    {
-        $this->viewShare('title', $title);
     }
 
 
@@ -127,6 +77,34 @@ abstract class Controller extends BaseController
     }
 
 
+    /**
+     * Show the user profile.
+     */
+    public function setContent($view, $data = [])
+    {
+        if ($this->breadcrumbs) {
+            $this->viewShare('breadcrumbs', $this->breadcrumbs);
+        }
+
+        if ( ! is_null($this->layout)) {
+            if ($data instanceof Arrayable) {
+                $data = $data->toArray();
+            }
+            $this->shareMetadataWithView($this->layout);
+
+            return $this->layout->nest('child', $view, is_array($data) ? $data : []);
+        }
+
+        return view($view, $data);
+    }
+
+
+    public function setTitle($title)
+    {
+        $this->viewShare('title', $title);
+    }
+
+
     public function callAction($method, $parameters)
     {
         $this->setupLayout();
@@ -138,5 +116,27 @@ abstract class Controller extends BaseController
         }
 
         return $response;
+    }
+
+
+    /**
+     * Setup the layout used by the controller.
+     */
+    protected function setupLayout()
+    {
+        if ( ! is_null($this->layout) && ! is_object($this->layout)) {
+            $this->layout = view($this->layout);
+        }
+    }
+
+
+    /**
+     * Set the layout used by the controller.
+     *
+     * @param $name
+     */
+    protected function setLayout($name)
+    {
+        $this->layout = is_string($name) ? view($name) : $name;
     }
 }

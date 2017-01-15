@@ -32,11 +32,11 @@ abstract class ApiController extends BaseController
         app()->setLocale(array_get($this->settings, 'site.lang', 'en'));
 
         // Setup User
-//        $this->middleware(function ($request, $next) {
-            $this->currentUser = Auth::user();
+        //        $this->middleware(function ($request, $next) {
+        $this->currentUser = Auth::user();
 
-//            return $next($request);
-//        });
+        //            return $next($request);
+        //        });
 
     }
 }

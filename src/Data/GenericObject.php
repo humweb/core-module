@@ -13,6 +13,7 @@ class GenericObject
 
     protected $required = [];
 
+
     /**
      * Create a new generic object.
      *
@@ -26,6 +27,7 @@ class GenericObject
         $this->enforceRequiredProperties();
     }
 
+
     public function enforceRequiredProperties()
     {
         if (count($this->required) > 0) {
@@ -37,7 +39,6 @@ class GenericObject
                 if ( ! isset($this->attributes[$prop])) {
 
                     $missing[] = $prop;
-
                 }
             }
 
@@ -46,6 +47,7 @@ class GenericObject
             }
         }
     }
+
 
     /**
      * Dynamically access the attributes.
@@ -59,6 +61,7 @@ class GenericObject
         return $this->attributes[$key];
     }
 
+
     /**
      * Dynamically set an attribute.
      *
@@ -69,6 +72,7 @@ class GenericObject
     {
         $this->attributes[$key] = $value;
     }
+
 
     /**
      * Dynamically check if a value is set.
@@ -81,6 +85,7 @@ class GenericObject
     {
         return isset($this->attributes[$key]);
     }
+
 
     /**
      * Dynamically unset a value.
