@@ -22,4 +22,10 @@ class AdminController extends Controller
         $this->crumb('Admin', '/');
         $this->viewShare('admin_menu', $this->menu->render());
     }
+
+
+    public function getIndex()
+    {
+        return $this->setContent('admin.dashboard');
+    }
 }
