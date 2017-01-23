@@ -15,8 +15,8 @@ trait SluggableTrait
     protected $slugOptions = [
         'maxlen'     => 200,
         'unique'     => true,
-        'slug_field' => '',
-        'from_field' => '',
+        'slug_field' => 'slug',
+        'from_field' => 'title',
     ];
 
     protected $runtimeSlugOptions = [];
@@ -77,6 +77,7 @@ trait SluggableTrait
         $this->ensureValidSlugOptions();
 
         $slug = $this->generateNonUniqueSlug();
+
 
         if ($this->slugOptions['unique'] == true) {
             $slug = $this->makeSlugUnique($slug);
@@ -161,15 +162,15 @@ trait SluggableTrait
     protected function ensureValidSlugOptions()
     {
         if ( ! isset($this->slugOptions['from_field'])) {
-            throw \Exception('[Sluggable Options] Missing slug from field');
+            throw new \Exception('[Sluggable Options] Missing slug from field');
         }
 
         if ( ! isset($this->slugOptions['slug_field'])) {
-            throw \Exception('[Sluggable Options] Missing slug to field');
+            throw new \Exception('[Sluggable Options] Missing slug to field');
         }
 
         if ($this->slugOptions['maxlen'] <= 0) {
-            throw \Exception('[Sluggable Options] Max length for slug is: '.$this->slugOptions['maxlen']);
+            throw new \Exception('[Sluggable Options] Max length for slug is: '.$this->slugOptions['maxlen']);
         }
     }
 }
