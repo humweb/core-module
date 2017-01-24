@@ -11,7 +11,8 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package Humweb\Tests\Core\Fake
  */
-class Page extends Model {
+class Page extends Model
+{
     use SluggableTrait, HasRelatedContent;
 
     protected $table = 'pages';

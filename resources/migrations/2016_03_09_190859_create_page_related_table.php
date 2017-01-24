@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreatePageRelatedTable extends Migration
 {
@@ -12,12 +12,10 @@ class CreatePageRelatedTable extends Migration
             $table->unsignedInteger('source_id');
             $table->string('related_type');
             $table->unsignedInteger('related_id');
-            $table->unique(
-                ['source_id', 'source_type', 'related_id', 'related_type'],
-                'relatables_unique'
-            );
+            $table->unique(['source_id', 'source_type', 'related_id', 'related_type'], 'relatables_unique');
         });
     }
+
 
     public function down()
     {

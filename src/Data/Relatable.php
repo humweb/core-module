@@ -25,8 +25,8 @@ class Relatable extends Model
     /** @var bool */
     public $incrementing = false;
     /** @var bool */
-    public $timestamps = false;
-    protected $table = 'content_related';
+    public    $timestamps = false;
+    protected $table      = 'content_related';
     /** @var array */
     protected $guarded = [];
     /** @var string|null */
