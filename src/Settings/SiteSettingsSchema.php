@@ -1,6 +1,8 @@
 <?php
 
-namespace Humweb\Settings;
+namespace Humweb\Core\Settings;
+
+use Humweb\Settings\SettingsSchema;
 
 class SiteSettingsSchema extends SettingsSchema
 {

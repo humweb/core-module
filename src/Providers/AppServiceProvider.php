@@ -3,8 +3,8 @@
 namespace Humweb\Core\Providers;
 
 use Humweb\Modules\ModuleServiceProvider;
-use Humweb\Settings\EmailSettingsSchema;
-use Humweb\Settings\SiteSettingsSchema;
+use Humweb\Core\Settings\EmailSettingsSchema;
+use Humweb\Core\Settings\SiteSettingsSchema;
 
 class AppServiceProvider extends ModuleServiceProvider
 {
@@ -15,14 +15,16 @@ class AppServiceProvider extends ModuleServiceProvider
      */
     public function boot()
     {
-        $this->app['settings.schema.manager']->register('site', SiteSettingsSchema::class)->register('mail', EmailSettingsSchema::class);
+        // Register module
+        $this->app['modules']->put('core', $this);
+        $this->app['settings.schema.manager']->register('site', SiteSettingsSchema::class)->register('email', EmailSettingsSchema::class);
 
         $settings = $this->app['settings']->getSection('email');
         $from     = $this->app['config']['mail.from'];
 
         $this->app['mailer']->alwaysFrom(
-            $settings->get(['from_address'], $from['address']),
-            $settings->get(['from_name'], $from['name'])
+            $settings->get('email.from_address', $from['address']),
+            $settings->get('email.from_name', $from['name'])
         );
     }
 
