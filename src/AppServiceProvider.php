@@ -1,6 +1,6 @@
 <?php
 
-namespace Humweb\Core\Providers;
+namespace Humweb\Core;
 
 use Humweb\Modules\ModuleServiceProvider;
 use Humweb\Core\Settings\EmailSettingsSchema;
@@ -8,6 +8,16 @@ use Humweb\Core\Settings\SiteSettingsSchema;
 
 class AppServiceProvider extends ModuleServiceProvider
 {
+
+    protected $moduleMeta = [
+        'name'    => 'Core module',
+        'slug'    => 'core',
+        'version' => '',
+        'author'  => '',
+        'email'   => '',
+        'website' => '',
+    ];
+
     /**
      * Bootstrap any application services.
      *
@@ -15,10 +25,12 @@ class AppServiceProvider extends ModuleServiceProvider
      */
     public function boot()
     {
+        // Load resources
+        $this->loadLang();
+
         // Register module
         $this->app['modules']->put('core', $this);
         $this->app['settings.schema.manager']->register('site', SiteSettingsSchema::class)->register('email', EmailSettingsSchema::class);
-
         $settings = $this->app['settings']->getSection('email');
         $from     = $this->app['config']['mail.from'];
 
@@ -26,6 +38,8 @@ class AppServiceProvider extends ModuleServiceProvider
             $settings->get('email.from_address', $from['address']),
             $settings->get('email.from_name', $from['name'])
         );
+
+
     }
 
 
