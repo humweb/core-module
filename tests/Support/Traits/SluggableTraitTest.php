@@ -158,7 +158,7 @@ class SluggableTraitTest extends TestCase
         $model = $this->createPageEntity('this is a test');
         $this->createPageEntity('this is an other');
 
-        $model->slug = 'this-is-an-other';
+        $model->title = 'this-is-an-other';
         $model->save();
 
         $this->assertEquals('this-is-an-other-1', $model->slug);
