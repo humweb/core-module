@@ -32,7 +32,9 @@ trait SluggableTrait
         });
 
         static::updating(function (Model $model) {
-            $model->addSlug();
+            if ($model->getAttribute($model->slugOptions['from_field']) != $model->getOriginal($model->slugOptions['from_field'])) {
+                $model->addSlug();
+            }
         });
     }
 
@@ -77,7 +79,6 @@ trait SluggableTrait
         $this->ensureValidSlugOptions();
 
         $slug = $this->generateNonUniqueSlug();
-
 
         if ($this->slugOptions['unique'] == true) {
             $slug = $this->makeSlugUnique($slug);
