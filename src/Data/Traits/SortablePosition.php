@@ -32,23 +32,18 @@ trait SortablePosition
     {
         //Bind to model events
         static::deleting(function ($model) {
-            $pos   = $model->getAttribute('position');
             $field = $model->getScopeField();
-            $model->scopeCondition()->where('position', '>', $model->position)->decrement('position');
+            $model->scopeCondition()->where($model->positionColumn(), '>', $model->getSortablePosition())->decrement($model->positionColumn());
         });
 
         static::updating(function (Model $model) {
 
+            $oldPos = $model->getSortablePosition(true);
+            $newPos = $model->getSortablePosition();
+
             if ($model->hasScopeChanged()) {
-                $model->handleSortableScopeChanged();
-            } else {
-
-                $oldPos = $model->getOriginal('position');
-                $newPos = $model->getAttribute('position');
-
-                if ($oldPos == $newPos) {
-                    return;
-                }
+                $model->handleSortableScopeChanged($oldPos, $newPos);
+            } elseif ($oldPos != $newPos) {
 
                 $q          = $model->newQuery();
                 $field      = $model->getScopeField();
@@ -59,15 +54,15 @@ trait SortablePosition
                 }
 
                 if ($oldPos < $newPos) {
-                    $q->where('position', '>', $oldPos)->where('position', '<=', $newPos)->where($primaryKey, '!=', $model->id)->decrement('position');
+                    $q->where($model->positionColumn(), '>', $oldPos)->where($model->positionColumn(), '<=', $newPos)->where($primaryKey, '!=', $model->id)->decrement($model->positionColumn());
                 } else {
-                    $q->where('position', '>=', $newPos)->where('position', '<', $oldPos)->where($primaryKey, '!=', $model->id)->increment('position');
+                    $q->where($model->positionColumn(), '>=', $newPos)->where($model->positionColumn(), '<', $oldPos)->where($primaryKey, '!=', $model->id)->increment($model->positionColumn());
                 }
             }
         });
 
         static::creating(function ($model) {
-            $model->position = $model->getNextPosition();
+            $model->setSortablePosition($model->getNextPosition());
         });
     }
 
@@ -86,16 +81,28 @@ trait SortablePosition
     }
 
 
-    public function handleSortableScopeChanged()
+    public function handleSortableScopeChanged($oldPos, $newPos)
     {
-        $oldPos = $this->getOriginal('position');
-        $newPos = $this->getAttribute('position');
+        $oldPos = $this->getSortablePosition(true);
+        $newPos = $this->getSortablePosition();
 
         // Move up items in old group
-        $this->scopeCondition(true)->where('position', '>', $oldPos)->decrement('position');
+        $this->scopeCondition(true)->where($this->positionColumn(), '>', $oldPos)->decrement($this->positionColumn());
 
-        // Move down items below in new group
-        $this->scopeCondition()->where('position', '>=', $newPos)->increment('position');
+        if (is_null($newPos)) {
+            $this->setSortablePosition($this->getNextPosition());
+        } else {
+            // Move down items below in new group
+            $this->scopeCondition()->where($this->positionColumn(), '>=', $newPos)->increment($this->positionColumn());
+        }
+    }
+
+
+    public function getScopeValue($old)
+    {
+        $scope = $this->getSortableScope();
+
+        return $old ? $this->getOriginal($scope) : $this->getAttribute($scope);
     }
 
 
@@ -122,7 +129,7 @@ trait SortablePosition
         } elseif ($scope instanceof BelongsTo) {
             return $this->sortableBelongsToScope($scope, $old);
         } else {
-            throw new \Exception('Sortable scope parameter must be a String, an Eloquent BelongsTo object, or a Query Builder object.');
+            throw new \Exception('Sortable scope parameter must be a String, BelongsTo relationship, or Builder instance.');
         }
     }
 
@@ -157,14 +164,14 @@ trait SortablePosition
 
     public function getNextPosition()
     {
-        return $this->scopeCondition()->max('position') + 1;
+        return $this->scopeCondition()->max($this->positionColumn()) + 1;
     }
 
 
     /**
-     * An Eloquent scope based on the processed scope option
+     * Eloquent scope based on the processed scope option
      *
-     * @param  $query An Eloquent Query Builder instance
+     * @param  $query Builder instance
      *
      * @return Builder instance
      */
@@ -188,11 +195,13 @@ trait SortablePosition
     /**
      * Returns the value of the model's current position
      *
+     * @param bool $old
+     *
      * @return int
      */
-    public function getSortablePosition()
+    public function getSortablePosition($old = false)
     {
-        return $this->getAttribute($this->positionColumn());
+        return $old ? $this->getOriginal($this->positionColumn()) : $this->getAttribute($this->positionColumn());
     }
 
 
@@ -247,9 +256,7 @@ trait SortablePosition
 
         if (is_string($scope)) {
             return $scope;
-        }
-
-        if ($scope instanceof BelongsTo) {
+        } elseif ($scope instanceof BelongsTo) {
             return $scope->getForeignKey();
         }
 
@@ -271,7 +278,6 @@ trait SortablePosition
     }
 
     /* Private Methods */
-
 
     /**
      * Updates a sortable config value
