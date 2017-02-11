@@ -54,9 +54,15 @@ trait SortablePosition
                 }
 
                 if ($oldPos < $newPos) {
-                    $q->where($model->positionColumn(), '>', $oldPos)->where($model->positionColumn(), '<=', $newPos)->where($primaryKey, '!=', $model->id)->decrement($model->positionColumn());
+                    $q->where($model->positionColumn(), '>', $oldPos)
+                      ->where($model->positionColumn(), '<=', $newPos)
+                      ->where($primaryKey, '!=', $model->id)
+                      ->decrement($model->positionColumn());
                 } else {
-                    $q->where($model->positionColumn(), '>=', $newPos)->where($model->positionColumn(), '<', $oldPos)->where($primaryKey, '!=', $model->id)->increment($model->positionColumn());
+                    $q->where($model->positionColumn(), '>=', $newPos)
+                      ->where($model->positionColumn(), '<', $oldPos)
+                      ->where($primaryKey, '!=', $model->id)
+                      ->increment($model->positionColumn());
                 }
             }
         });
