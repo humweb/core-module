@@ -2,6 +2,7 @@
 
 namespace Humweb\Core\Settings;
 
+use Humweb\Menus\Models\Menu;
 use Humweb\Settings\SettingsSchema;
 
 class SiteSettingsSchema extends SettingsSchema
@@ -34,6 +35,12 @@ class SiteSettingsSchema extends SettingsSchema
                 'type'        => 'text',
                 'label'       => trans('core::site.meta_topic_label'),
                 'description' => trans('core::site.meta_topic_description'),
+            ],
+            'site.menu' => [
+                'type'        => 'select',
+                'label'       => 'Top Menu',
+                'description' => 'What to show in main site menu.',
+                'options'     => ['0' => 'Use page hierarchy'] + Menu::pluck('title', 'id')->all(),
             ],
             'site.lang'         => [
                 'type'        => 'select',

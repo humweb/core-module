@@ -8,21 +8,15 @@
       "email": "ryun@humboldtweb.com"
     }
   ],
-  "description": "The Laravel Framework.",
+  "description": "Core CMF Framework.",
   "keywords": [
-    "framework",
+    "cms",
     "laravel"
-  ],
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/humweb/StringBladeCompiler"
-    }
   ],
   "require": {
     "php": ">=5.6.4",
     "laravel/framework": "5.3.*|5.4.*",
-    "wpb/string-blade-compiler": "3.4.*"
+    "league/pipeline": "0.3.*"
   },
   "require-dev": {
     "phpunit/phpunit": "~4.0||~5.0",
