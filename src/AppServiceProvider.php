@@ -2,9 +2,9 @@
 
 namespace Humweb\Core;
 
-use Humweb\Modules\ModuleServiceProvider;
 use Humweb\Core\Settings\EmailSettingsSchema;
 use Humweb\Core\Settings\SiteSettingsSchema;
+use Humweb\Modules\ModuleServiceProvider;
 
 class AppServiceProvider extends ModuleServiceProvider
 {
@@ -18,6 +18,7 @@ class AppServiceProvider extends ModuleServiceProvider
         'website' => '',
     ];
 
+
     /**
      * Bootstrap any application services.
      *
@@ -25,21 +26,22 @@ class AppServiceProvider extends ModuleServiceProvider
      */
     public function boot()
     {
+        $this->loadMigrations();
         // Load resources
         $this->loadLang();
 
         // Register module
         $this->app['modules']->put('core', $this);
         $this->app['settings.schema.manager']->register('site', SiteSettingsSchema::class)->register('email', EmailSettingsSchema::class);
-        $settings = $this->app['settings']->getSection('email');
-        $from     = $this->app['config']['mail.from'];
 
-        $this->app['mailer']->alwaysFrom(
-            $settings->get('email.from_address', $from['address']),
-            $settings->get('email.from_name', $from['name'])
-        );
+        try {
+            $settings = $this->app['settings']->getSection('email');
+            $from     = $this->app['config']['mail.from'];
 
-
+            $this->app['mailer']->alwaysFrom($settings->get('email.from_address', $from['address']), $settings->get('email.from_name', $from['name']));
+        } catch (\Exception $e) {
+            ! $this->app->runningInConsole() && die("Could not connect to the database.  Please check your configuration.");
+        }
     }
 
 
