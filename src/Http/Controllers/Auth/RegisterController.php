@@ -2,10 +2,12 @@
 
 namespace Humweb\Core\Http\Controllers\Auth;
 
-use App\User;
+
+use Humweb\Auth\Users\User;
 use Humweb\Core\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\RegistersUsers;
-use Validator;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Foundation\Auth\RedirectsUsers;
+use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
@@ -20,14 +22,14 @@ class RegisterController extends Controller
     |
     */
 
-    use RegistersUsers;
+    use RedirectsUsers;
 
     /**
      * Where to redirect users after login / registration.
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/';
 
 
     /**
@@ -42,20 +44,57 @@ class RegisterController extends Controller
 
 
     /**
-     * Get a validator for an incoming registration request.
+     * Show the application registration form.
      *
-     * @param  array $data
-     *
-     * @return \Illuminate\Contracts\Validation\Validator
+     * @return \Illuminate\Http\Response
      */
-    protected function validator(array $data)
+    public function showRegistrationForm(Request $request)
     {
-        return Validator::make($data, [
-            'name'     => 'required|max:255',
-            'email'    => 'required|email|max:255|unique:users',
-            'password' => 'required|min:6|confirmed',
+        return view('auth.register', [
+            'invitation' => $request->query('invitation')
         ]);
     }
+
+
+    /**
+     * Handle a registration request for the application.
+     *
+     * @param  \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function register(Request $request)
+    {
+        $request->validate([
+            'first_name' => 'required|max:255',
+            'last_name'  => 'required|max:255',
+            'email'      => 'required|email|max:255|unique:users',
+            'password'   => 'required|min:6|confirmed',
+        ]);
+
+        event(new Registered($user = $this->create($request->all())));
+
+        Auth::guard()->login($user);
+
+        return $this->registered($request, $user) ?: redirect($this->redirectPath());
+    }
+
+
+    /**
+     * The user has been registered.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  mixed                    $user
+     *
+     * @return mixed
+     */
+    protected function registered(Request $request, $user)
+    {
+        if ($request->has('invitation')) {
+            $user->joinTeamFromToken($request->invitation);
+        }
+    }
+
 
 
     /**
@@ -68,9 +107,11 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
         return User::create([
-            'name'     => $data['name'],
-            'email'    => $data['email'],
-            'password' => bcrypt($data['password']),
+            'first_name' => $data['first_name'],
+            'last_name'  => $data['last_name'],
+            'email'      => $data['email'],
+            'password'   => bcrypt($data['password']),
         ]);
     }
+
 }

@@ -14,7 +14,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    protected $namespace = 'Humweb\Core\Http\Controllers';
+    protected $namespace = 'Humweb\Auth\Http\Controllers';
 
 
     /**
@@ -53,9 +53,11 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapWebRoutes()
     {
-        Route::middleware('web')
-             ->namespace($this->namespace)
-             ->group(base_path('routes/web.php'));
+        Route::middleware('web')->namespace($this->namespace)->group(base_path('routes/web.php'));
+        Route::middleware('web')->get('admin', [
+            'as'   => 'get.admin',
+            'uses' => 'Humweb\Core\Http\Controllers\AdminController@getIndex'
+        ]);
     }
 
 
