@@ -3,6 +3,7 @@
 namespace Humweb\Core\Http\Controllers;
 
 use Humweb\Html\Facades\AdminMenu;
+use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
@@ -24,7 +25,7 @@ class AdminController extends Controller
     }
 
 
-    public function getIndex()
+    public function getIndex(Request $request)
     {
         return $this->setContent('admin.dashboard');
     }
