@@ -31,6 +31,10 @@ abstract class Controller extends BaseController
         $this->settings = Settings::getSection('site');
         $this->viewShare('siteSettings', $this->settings);
 
+        if (isset($this->settings['site']['meta_topic'])) {
+            $this->setMeta('topic', $this->settings['site']['meta_topic']);
+        }
+
         // Set language
         app()->setLocale(array_get($this->settings, 'site.lang', 'en'));
 
